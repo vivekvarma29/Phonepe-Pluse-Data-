@@ -1,8 +1,10 @@
-import json
-import streamlit as st
-import pandas as pd
-import requests
 import mysql.connector
+import pandas as pd
+import streamlit as st
+import json
+import requests
+import plotly.express as px
+
 import plotly.express as px
 
 #CREATE DATAFRAMES FROM SQL
@@ -70,6 +72,7 @@ table6 = cursor.fetchall()
 mydb.commit()
 Top_user = pd.DataFrame(table6, columns = ("States", "Years", "Quarter", "Pincodes", "RegisteredUser"))
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #Insurance tab
 def insurance():
@@ -96,23 +99,31 @@ def insurance():
     transaction_sum_by_state = filtered_df.groupby('States')['Transaction_amount'].sum().reset_index()
     
     
-    # Fetch GeoJSON data from URL
+   # Fetch GeoJSON data
     url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
     response = requests.get(url)
     data1 = response.json()
-    states_name_tra = [feature["properties"]["ST_NM"] for feature in data1["features"]]
-    states_name_tra.sort()
+
+    # Assuming transactions_sum_by_state is your DataFrame containing transaction amounts by state
+    # Assuming "States" column in transactions_sum_by_state DataFrame contains state names
 
     # Create choropleth map
-    fig_india_1 = px.choropleth(transaction_sum_by_state, geojson=data1, featureidkey="properties.ST_NM", 
-                                locations="States", color="Transaction_amount", 
-                                color_continuous_scale="Sunsetdark",
-                                range_color=(filtered_df["Transaction_amount"].min(), filtered_df["Transaction_amount"].max()),
-                                hover_name="States", title=f"{selected_year} TRANSACTION AMOUNT",
-                                width=600, height=600)
-    fig_india_1.update_geos(fitbounds="locations",visible=False)
+    fig_india_1 = px.choropleth(
+        transaction_sum_by_state,
+        geojson=data1,
+        featureidkey="properties.ST_NM",
+        locations="States",
+        color="Transaction_amount",
+        color_continuous_scale="Sunsetdark",
+        range_color=(transaction_sum_by_state["Transaction_amount"].min(), transaction_sum_by_state["Transaction_amount"].max()),
+        hover_name="States",
+        title=f"{selected_year} TRANSACTION Amount",
+        width=600,
+        height=600
+    )
+    fig_india_1.update_geos(fitbounds="locations", visible=False)
     
-    # Display the map in Streamlit
+     # Display the map in Streamlit
     st.plotly_chart(fig_india_1)
     
 
@@ -191,22 +202,31 @@ def Transactions():
     # Group by 'States' and calculate the sum of 'Transaction_amount' for each state
     transactions_sum_by_state = filtered_df.groupby('States')['Transaction_amount'].sum().reset_index()
     
-    
-    # Fetch GeoJSON data from URL
+
+    # Fetch GeoJSON data
     url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
     response = requests.get(url)
     data1 = response.json()
-    states_name_tra = [feature["properties"]["ST_NM"] for feature in data1["features"]]
-    states_name_tra.sort()
+
+    # Assuming transactions_sum_by_state is your DataFrame containing transaction amounts by state
+    # Assuming "States" column in transactions_sum_by_state DataFrame contains state names
 
     # Create choropleth map
-    fig_india_2 = px.choropleth(transactions_sum_by_state, geojson=data1, featureidkey="properties.ST_NM", 
-                                locations="States", color="Transaction_amount", 
-                                color_continuous_scale="Sunsetdark",
-                                range_color=(filtered_df["Transaction_amount"].min(), filtered_df["Transaction_amount"].max()),
-                                hover_name="States", title=f"{selected_year} TRANSACTION AMOUNT",
-                                width=600, height=600)
-    fig_india_2.update_geos(fitbounds="locations",visible=False)
+    fig_india_2 = px.choropleth(
+        transactions_sum_by_state,
+        geojson=data1,
+        featureidkey="properties.ST_NM",
+        locations="States",
+        color="Transaction_amount",
+        color_continuous_scale="Sunsetdark",
+        range_color=(transactions_sum_by_state["Transaction_amount"].min(), transactions_sum_by_state["Transaction_amount"].max()),
+        hover_name="States",
+        title=f"{selected_year} TRANSACTION AMOUNT",
+        width=600,
+        height=600
+    )
+    fig_india_2.update_geos(fitbounds="locations", visible=False)
+
     
     # Display the map in Streamlit
     st.plotly_chart(fig_india_2)
@@ -300,24 +320,35 @@ def user():
     # Group by 'States' and calculate the sum of 'Transaction_count' for each state
     transactions_sum_by_state = filtered_df.groupby('States')['Transaction_count'].sum().reset_index()
 
-    # Fetch GeoJSON data from URL
+
+
+    # Fetch GeoJSON data
     url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
     response = requests.get(url)
     data1 = response.json()
-    states_name_tra = [feature["properties"]["ST_NM"] for feature in data1["features"]]
-    states_name_tra.sort()
+
+    # Assuming transactions_sum_by_state is your DataFrame containing transaction amounts by state
+    # Assuming "States" column in transactions_sum_by_state DataFrame contains state names
 
     # Create choropleth map
-    fig_india_3 = px.choropleth(transactions_sum_by_state, geojson=data1, featureidkey="properties.ST_NM", 
-                                locations="States", color="Transaction_count", 
-                                color_continuous_scale="Sunsetdark",
-                                range_color=(filtered_df["Transaction_count"].min(), filtered_df["Transaction_count"].max()),
-                                hover_name="States", title=f"{selected_year} TRANSACTION count",
-                                width=600, height=600)
-    fig_india_3.update_geos(fitbounds="locations",visible=False)
-
-    # Display the map in Streamlit
+    fig_india_3 = px.choropleth(
+        transactions_sum_by_state,
+        geojson=data1,
+        featureidkey="properties.ST_NM",
+        locations="States",
+        color="Transaction_count",
+        color_continuous_scale="Sunsetdark",
+        range_color=(transactions_sum_by_state["Transaction_count"].min(), transactions_sum_by_state["Transaction_count"].max()),
+        hover_name="States",
+        title=f"{selected_year} TRANSACTION Count",
+        width=600,
+        height=600
+    )
+    fig_india_3.update_geos(fitbounds="locations", visible=False)
+    
+     # Display the map in Streamlit
     st.plotly_chart(fig_india_3)
+
 
     # Plotting the bar graph using Plotly Express
     fig1 = px.bar(transactions_sum_by_state, x='States', y='Transaction_count',
@@ -360,7 +391,7 @@ def user():
         # Display the top 10 pincodes DataFrame
         st.write(sort_df)
     
-
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #Streamlit Code
 # st.set_page_config(layout="wide")
@@ -371,14 +402,11 @@ st.write("")
 # Create a dropdown menu in the sidebar
 option = st.sidebar.selectbox(
     'Choose an option',
-    ('Home', 'Insurance', 'Transactions', 'Users'))
+    ('Insurance', 'Transactions', 'Users'))
 
 # Display details based on the selected option
-if option == 'Home':
-    st.write('Details for Home')
-    st.write('This is some information about Home.')
 
-elif option == 'Insurance':
+if option == 'Insurance':
     insurance()
     
 elif option == 'Transactions':
